@@ -2,41 +2,45 @@ import { Injectable, NotFoundException,  } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comments } from './entities/comments.entity';
 import { CreateCommentsDTo } from './entities/dto/create-comments.dto';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
-export class CommentsService {
-    deletecomments(commentsId: number) {
-        throw new Error('Method not implemented.');
-    }
-    commentsRepository: any;
+export class CommentsService{
+    constructor(
+        @InjectRepository(Comments)
+        private commentsRepository: Repository<Comments>
+    ){}
 
-    // create comments
-    async createComments(CreateCommentsDto: CreateCommentsDTo): Promise <Comments>{
-        
-        const newComments= new Comments();
-        newComments.comment= CreateCommentsDto.comment;
-        newComments.name = CreateCommentsDto.name;
+    async createComment(createComment: CreateCommentsDTo): Promise <Comments> {
+        const comment = new Comments();
+        comment.name = createComment.name;
+        comment.comment = createComment.comment;
 
-        const createdComments = await this.commentsRepository.save(newComments);
-        return createdComments;
-
+        const savedComment = await this.commentsRepository.save(comment);
+        return savedComment;
     }
 
-    // get comments details by id
-    async getCommentsById(id:number): Promise <Comments> {
+    async getCommentById(id: number): Promise <Comments> {
+        const options: FindOneOptions <Comments> = {
+            where: {
+                id
+            },
+        };
 
-        const options: FindManyOptions <Comments> ={
-            where: { id },
-        }
-
-        const comments = await this.commentsRepository.findOne(options);
-        if(!comments){
+        const comment = await this.commentsRepository.findOne(options);
+        if(!comment){
             throw new NotFoundException("Posts Not Found");
         }
 
-        return comments;
+        return comment;
     }
 
+    async getAllComments(): Promise<Comments[]> {
+        return await this.commentsRepository.find();
+    }
 
+    async deleteComment(id: number): Promise <void> {
+        const comment = await this.getCommentById(id);
+        await this.commentsRepository.delete(comment);
+    }
 }

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { databaseConfig } from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,22 +9,19 @@ import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
+    /*ConfigModule.forRoot(),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: databaseConfig,
+    }),*/
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'health_db',
-      synchronize: true,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      
     }),
     UsersModule,
     PostsModule,
     AuthModule,
     CommentsModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

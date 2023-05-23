@@ -3,17 +3,21 @@ import {PostsService} from "./posts.service";
 import {Posts} from "./entities/posts.entity";
 import { CreatePostsDto } from './entities/dto/create-posts.dto';
 import { UpdatePostsDto } from './entities/dto/update-posts.dto';
-import {ApiTags} from 'fastify-swagger';
+//import {ApiTags} from '@nestjs/swagger';
+
 
 //@ApiTags('POSTS')
 @Controller('posts')
 export class PostsController {
     constructor(private postsService:PostsService){}
 
-    @Post()
-    async createPosts(@Body(ValidationPipe) createPostsDto: CreatePostsDto){
+    @Post('id')
+    async createPosts(
+        @Body(ValidationPipe) createPostsDto: CreatePostsDto,
+        @Param('id') id:number,
+    ){
 
-        const newPosts = await this.postsService.createPosts(createPostsDto);
+        const newPosts = await this.postsService.createPosts(createPostsDto, id);
         return newPosts;
     }
 
@@ -37,6 +41,5 @@ export class PostsController {
         await this.postsService.deletePosts(postsId);
         res.status(201).send();
     }
-
 
 }

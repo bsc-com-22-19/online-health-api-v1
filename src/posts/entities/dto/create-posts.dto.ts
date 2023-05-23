@@ -1,5 +1,5 @@
 import { IsString, IsOptional } from 'class-validator';
-import {ApiProperty} from 'fastify-swagger';
+//import {ApiProperty} from '@nestjs/swagger';
 
 export class CreatePostsDto {
     @IsString()
@@ -7,7 +7,7 @@ export class CreatePostsDto {
         description:'name',
         example:'cholera preventive measures'
     })*/
-    name: string;
+    title: string;
 
     @IsString()
     /*@ApiProperty({

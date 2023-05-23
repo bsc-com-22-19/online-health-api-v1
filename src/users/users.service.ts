@@ -29,7 +29,7 @@ export class UsersService {
     }
 
      // get user details by id
-     async getPostsById(id:number): Promise <User> {
+     async getUserById(id:number): Promise <User> {
 
         const options: FindManyOptions <User> ={
             where: { id },

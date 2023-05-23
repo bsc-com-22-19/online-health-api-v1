@@ -4,21 +4,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './entities/posts.entity';
 import { CreatePostsDto } from './entities/dto/create-posts.dto';
 import { UpdatePostsDto } from './entities/dto/update-posts.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectRepository(Posts)
-        private readonly postsRepository: Repository <Posts>
+        private readonly postsRepository: Repository <Posts>,
+        private readonly userService: UsersService,
     ){}
 
     // create post
-    async createPosts(CreatePostsDto: CreatePostsDto): Promise <Posts>{
+    async createPosts(CreatePostsDto: CreatePostsDto, authorsId: number): Promise <Posts>{
+        const author = await this.userService.getUserById(authorsId);
         
         const newPosts = new Posts();
         newPosts.Summary = CreatePostsDto.summary;
         newPosts.imageurl = CreatePostsDto.imageurl;
-        newPosts.name = CreatePostsDto.name;
+        newPosts.title = CreatePostsDto.title;
+        newPosts.user;
 
         const createdPosts = await this.postsRepository.save(newPosts);
         return createdPosts;
@@ -26,7 +30,7 @@ export class PostsService {
     }
 
     // get posts details by id
-    async getPostsById(id:number): Promise <Posts> {
+    async getPostsById(id: number): Promise <Posts> {
 
         const options: FindManyOptions <Posts> ={
             where: { id },

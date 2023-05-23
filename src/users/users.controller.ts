@@ -3,9 +3,9 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity'; 
 import { CreateUserDTo } from './entities/dto/create-user.dto';
 import { UpdateUserDto } from './entities/dto/update-user.dto';
-import { ApiTags} from 'fastify-swagger';
+//import { ApiTags} from '@nestjs/swagger';
 
-@ApiTags('USER')
+//@ApiTags('USER')
 @Controller('users')
 export class UsersController {
     constructor(private userService:UsersService){}
