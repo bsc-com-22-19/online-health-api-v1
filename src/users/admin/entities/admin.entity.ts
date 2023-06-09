@@ -1,9 +1,9 @@
-import {BaseEntity, Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Posts } from "src/posts/entities/posts.entity";
+import { MinLength, matches } from "class-validator";
 
-@Entity({name: 'users'})
-
-export class User extends BaseEntity{
+@Entity()
+export class Admin {
 
     @PrimaryGeneratedColumn()
     id:number;
@@ -14,7 +14,7 @@ export class User extends BaseEntity{
     @Column()
     lastName:string;
 
-    @Column()
+    @Column({unique: true})
     email:string;
 
     @Column()
@@ -23,7 +23,7 @@ export class User extends BaseEntity{
     @Column()
     password: string;
 
-    @OneToMany(() => Posts, post => post.user)
+    @OneToMany(() => Posts, post => post.admin)
     posts: Posts[];
 
 

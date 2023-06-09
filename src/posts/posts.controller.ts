@@ -11,7 +11,7 @@ import { UpdatePostsDto } from './entities/dto/update-posts.dto';
 export class PostsController {
     constructor(private postsService:PostsService){}
 
-    @Post('id')
+    @Post(':id')
     async createPosts(
         @Body(ValidationPipe) createPostsDto: CreatePostsDto,
         @Param('id') id:number,

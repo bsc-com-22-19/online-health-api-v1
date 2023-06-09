@@ -4,25 +4,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from './entities/posts.entity';
 import { CreatePostsDto } from './entities/dto/create-posts.dto';
 import { UpdatePostsDto } from './entities/dto/update-posts.dto';
-import { UsersService } from 'src/users/users.service';
+import { AdminService } from 'src/users/admin/admin.service';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectRepository(Posts)
         private readonly postsRepository: Repository <Posts>,
-        private readonly userService: UsersService,
+        private readonly adminService: AdminService,
     ){}
 
     // create post
     async createPosts(CreatePostsDto: CreatePostsDto, authorsId: number): Promise <Posts>{
-        const author = await this.userService.getUserById(authorsId);
+        const author = await this.adminService.getAdminById(authorsId);
         
         const newPosts = new Posts();
         newPosts.Summary = CreatePostsDto.summary;
         newPosts.imageurl = CreatePostsDto.imageurl;
         newPosts.title = CreatePostsDto.title;
-        newPosts.user;
+        newPosts.admin = author;
 
         const createdPosts = await this.postsRepository.save(newPosts);
         return createdPosts;
@@ -30,13 +30,14 @@ export class PostsService {
     }
 
     // get posts details by id
-    async getPostsById(id: number): Promise <Posts> {
+    async getPostsById(postId: number): Promise <Posts> {
 
-        const options: FindManyOptions <Posts> ={
-            where: { id },
-        }
+        const posts = await this.postsRepository.findOne({
+            where: {
+                id: postId
+            },
+        });
 
-        const posts = await this.postsRepository.findOne(options);
         if(!posts){
             throw new NotFoundException("Posts Not Found");
         }
@@ -65,7 +66,5 @@ export class PostsService {
         const posts = await this.getPostsById(postsId);
         await this.postsRepository.remove(posts);
     }
-
- 
 
 }

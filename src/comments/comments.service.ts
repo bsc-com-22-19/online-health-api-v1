@@ -3,31 +3,36 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Comments } from './entities/comments.entity';
 import { CreateCommentsDTo } from './entities/dto/create-comments.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { UserService } from 'src/users/user/user.service';
 
 @Injectable()
 export class CommentsService{
     constructor(
         @InjectRepository(Comments)
-        private commentsRepository: Repository<Comments>
+        private commentsRepository: Repository<Comments>,
+        private userService: UserService
     ){}
 
-    async createComment(createComment: CreateCommentsDTo): Promise <Comments> {
+    async createComment(createComment: CreateCommentsDTo, userId: number): Promise <Comments> {
+        const user = await this.userService.getUserById(userId);
+
         const comment = new Comments();
-        comment.name = createComment.name;
+        comment.name = user.lastName
         comment.comment = createComment.comment;
+        comment.user = user;
 
         const savedComment = await this.commentsRepository.save(comment);
         return savedComment;
     }
 
-    async getCommentById(id: number): Promise <Comments> {
-        const options: FindOneOptions <Comments> = {
+    async getCommentById(cId: number): Promise <Comments> {
+        
+        const comment = await this.commentsRepository.findOne({
             where: {
-                id
+                id: cId
             },
-        };
-
-        const comment = await this.commentsRepository.findOne(options);
+        });
+        
         if(!comment){
             throw new NotFoundException("Posts Not Found");
         }

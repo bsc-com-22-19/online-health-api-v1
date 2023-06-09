@@ -11,11 +11,15 @@ export class CommentsController {
         private commentsService: CommentsService,
     ){}
 
-    @Post('comment')
-    async createComment(@Body(ValidationPipe) createCommentDto: CreateCommentsDTo){
+    @Post('comment/:cId')
+    async createComment(
+        @Body(ValidationPipe) createComment: CreateCommentsDTo,
+        @Param('cId') cId: number,
+        @Res() res
+    ){
         try{
-            const newPosts = await this.commentsService.createComment(createCommentDto);
-            return Comments;
+            const comment = await this.commentsService.createComment(createComment, cId);
+            return res.send(comment);
         }catch(err){
             console.log(err);
             throw new NotFoundException('Not Found');
@@ -33,11 +37,11 @@ export class CommentsController {
         }
     }
 
-    @Get(":id")
-    async getPostsById(@Param("id") id:number, @Res() res): Promise <Comments> {
+    @Get("comment/:id")
+    async getPostsById(@Param("id") cId:number, @Res() res): Promise <Comments> {
 
         try{
-            const comments = await this.commentsService.getCommentById(id);
+            const comments = await this.commentsService.getCommentById(cId);
             return res.status(200).send(comments);
         }catch(err){
             console.log(err);
@@ -46,15 +50,14 @@ export class CommentsController {
     }
 
     @Delete(":id")
-    async deleteCommentsById(@Param("id") commentsId:number, @Res()res ): Promise <void> {
+    async deleteCommentsById(@Param("id") cId:number, @Res()res ): Promise <void> {
         try{
-            await this.commentsService.deleteComment(commentsId);
+            await this.commentsService.deleteComment(cId);
             res.status(201).send();
         }catch(err){
             console.log(err);
             throw new NotFoundException('Not Found');
         }
     }
-
 
 }

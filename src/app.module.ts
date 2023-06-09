@@ -1,27 +1,32 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { databaseConfig } from './config/database.config';
-import { UsersModule } from './users/users.module';
+import { ConfigurationModule} from 'config/config.module';
+import { DatabaseModule } from 'config/database.module';
 import { PostsModule } from './posts/posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
+import { AdminModule } from './users/admin/admin.module';
+import { UserModule } from './users/user/users.module';
+import { Admin } from './users/admin/entities/admin.entity';
+import { Posts } from './posts/entities/posts.entity';
+import { Comments } from './comments/entities/comments.entity';
+import { User } from './users/user/entities/user.entity';
+
 
 @Module({
   imports: [
-    /*ConfigModule.forRoot(),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: databaseConfig,
-    }),*/
-    TypeOrmModule.forRoot({
-      
-    }),
-    UsersModule,
+    // database modules
+    ConfigurationModule,
+    DatabaseModule,
+
+    // user service modules
+    AdminModule,
+    UserModule,
+    CommentsModule,
     PostsModule,
-    AuthModule,
-    CommentsModule
+
   ],
+  providers: [Admin,User,Comments,Posts],
 })
-export class AppModule {}
+export class AppModule{}
+
+
